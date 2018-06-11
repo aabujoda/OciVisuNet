@@ -5,5 +5,7 @@ I wrote this script to generate a graphical representation of Oracle Cloud Infra
 ![alt text](Figure_1-1.png "Description goes here")
 
 ## Requirements:
-To use this script you need to install and configure OCI Cli flowing this link:
-(https://github.com/oracle/oci-cli)
+To use this script you need to install and configure OCI Cli by following the instructions in this link:
+
+[To install OCI CLI](https://github.com/oracle/oci-cli)
+[To configure OCI CLI] (https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/cliconfigure.htm)
