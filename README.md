@@ -24,4 +24,7 @@ pip install matplotlib
 
 4. Run the script with:
 
+```
+python visuNet.py
+```
 
