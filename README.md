@@ -11,7 +11,7 @@ To use this script you need to:
 
 [To install OCI CLI](https://github.com/oracle/oci-cli)
 
-[To configure OCI CLI] (https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/cliconfigure.htm)
+[To configure OCI CLI](https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/cliconfigure.htm)
 
 2. Install the following python packages:
 ```
@@ -20,7 +20,7 @@ pip install networkx
 pip install matplotlib
 ```
 
-3. Confiure you VCN and Compartment OCID under the config.conf file
+3. Confiure you VCN and Compartment OCID under the [config.py](https://github.com/aabujoda/OciVisuNet/blob/master/config.py) file
 
 4. Run the script with:
 
