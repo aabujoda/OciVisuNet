@@ -4,7 +4,7 @@ I wrote this script to generate a graphical representation of Oracle Cloud Infra
 
 ![alt text](Figure_1-1.png "Description goes here")
 
-## Requirements:
+## Requirements and usage:
 To use this script you need to:
 
 1. install and configure OCI Cli by following the instructions in this link:
@@ -17,6 +17,11 @@ To use this script you need to:
 ```
 pip install networkx
 
-python -mpip install matplotlib
+pip install matplotlib
 ```
+
+3. Confiure you VCN and Compartment OCID under the config.conf file
+
+4. Run the script with:
+
 
