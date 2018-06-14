@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from config import compartment_id,vcn_id
 
-def pull_data(resource, subresource, compartment_id=None, vcn_id=None):
+def pull_oci_data(resource, subresource, compartment_id=None, vcn_id=None):
     if vcn_id == None:
         cmmd = "oci %s %s list --compartment-id %s " % (resource, subresource, compartment_id)
     else:
         cmmd = "oci %s %s list --compartment-id %s --vcn-id %s " % (resource, subresource, compartment_id, vcn_id)
+
     p = subprocess.Popen(cmmd, stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     p_status = p.wait()
@@ -59,12 +60,7 @@ class route_table:
 """ configuration parameters """
 
 ############## Subnets #################
-cmmd = "oci network subnet list --compartment-id %s --vcn-id %s " % (compartment_id, vcn_id)
-p = subprocess.Popen(cmmd, stdout=subprocess.PIPE, shell=True)
-(output, err) = p.communicate()
-p_status = p.wait()
-
-subnets_data = json.loads(output)
+subnets_data = pull_oci_data("network", "subnet", compartment_id=compartment_id, vcn_id=vcn_id)
 # print json.dumps(subnets_data, indent=4)
 subnets = []
 for i in subnets_data['data']:
@@ -76,7 +72,7 @@ for i in subnets_data['data']:
     subnets.append(s)
 
 ############# Route tables #################
-route_tables_data = pull_data("network", "route-table", compartment_id=compartment_id, vcn_id=vcn_id)
+route_tables_data = pull_oci_data("network", "route-table", compartment_id=compartment_id, vcn_id=vcn_id)
 print json.dumps(route_tables_data, indent=4)
 for i in route_tables_data['data']:
     r = route_table()
@@ -89,25 +85,15 @@ for i in route_tables_data['data']:
         if s.route_table_id == r.ocid:
             print "routing table was found"
             s.route_table = r
-        ########### Internet Gateway #################
-cmmd = "oci network internet-gateway list --compartment-id %s --vcn-id %s " % (compartment_id, vcn_id)
-p = subprocess.Popen(cmmd, stdout=subprocess.PIPE, shell=True)
-(output, err) = p.communicate()
-p_status = p.wait()
-
-IGW_data = json.loads(output)
+########### Internet Gateway #################
+IGW_data = pull_oci_data("network", "internet-gateway", compartment_id=compartment_id, vcn_id=vcn_id)
 
 igw = IGW()
 igw.ocid = IGW_data['data'][0]["id"]
 igw.name = IGW_data['data'][0]["display-name"]
 
 ############## VM Instances #################
-cmmd = "oci compute instance list --compartment-id %s " % (compartment_id)
-p = subprocess.Popen(cmmd, stdout=subprocess.PIPE, shell=True)
-(output, err) = p.communicate()
-p_status = p.wait()
-
-instances_data = json.loads(output)
+instances_data = pull_oci_data("compute", "instance", compartment_id=compartment_id)
 
 instances = []
 for i in instances_data['data']:
@@ -171,10 +157,6 @@ for s in subnets:
             G.add_edge(s.cidr_block, igw.name, weight=0.5, route_entry=r)
             edge_labels[(s.cidr_block, igw.name)] = edge_labels[(s.cidr_block, igw.name)] + "\n" + r
 
-    # route_entry="10.0.0.0/24"
-    # G.add_edge(s.cidr_block,igw.name, weight=0.5, route_entry=route_entry)
-    # edge_labels[(s.cidr_block,igw.name)]=route_entry
-    # labels[igw.name]="Internet \n GW"
 tmp_list = deepcopy(subnets)
 
 for s in subnets:
@@ -184,10 +166,7 @@ for s in subnets:
     for ss in tmp_list:
         if ss.ocid == s.ocid:
             tmp_list.remove(ss)
-# for node in G.nodes():
-# set the node name as the key and the label as its value
-#    labels[node] = node
-# labels[instances[0].name]=instances[0].name+ "\n"+ instances[0].private_ip
+
 
 pos = nx.spring_layout(G)
 nx.draw_networkx_nodes(G, pos, node_size=3000, nodelist=vm_nodes, node_shape='s', node_color='aquamarine', alpha=1.0)
@@ -199,5 +178,5 @@ nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
 
 plt.show()
-plt.savefig("Graph.png", format="PNG")
+#plt.savefig("Graph.png", format="PNG")
 exit()
